@@ -4,6 +4,17 @@ import folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 
+ # Define severity levels based on quartiles
+ def categorize_severity(icmnp_value):
+    if icmnp_value <= Q1:
+       return 'Low'
+    elif icmnp_value <= Q2:
+       return 'Medium'
+    elif icmnp_value <= Q3:
+       return 'High'
+    else:
+       return 'Critical'
+
 st.set_page_config(layout="wide")
 st.title("🚧 Mapa Interativo - Locais com Perigos nas Estradas")
 
@@ -17,6 +28,14 @@ uploaded_file = st.file_uploader("📁 Faça upload do arquivo CSV com os perigo
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
+
+    # Calculate quartiles for ICMNP
+    Q1 = df['ICMNP'].quantile(0.25) 
+    Q2 = df['ICMNP'].quantile(0.5)
+    Q3 = df['ICMNP'].quantile(0.75)
+
+    # Create the 'severity_level' column
+    df['severity_level'] = df['ICMNP'].apply(categorize_severity)
 
     st.subheader("🔍 Pré-visualização dos Dados")
     st.dataframe(df)
