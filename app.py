@@ -1,45 +1,50 @@
 import streamlit as st
 import pandas as pd
 import folium
+from folium.plugins import MarkerCluster
 from streamlit_folium import st_folium
 
 st.set_page_config(layout="wide")
-st.title("📍 Mapa Interativo - Condições das Estradas")
+st.title("🚧 Mapa Interativo - Locais com Perigos nas Estradas")
 
-st.write("Este aplicativo mostra um mapa com condições das estradas baseado em dados geográficos.")
+st.markdown("""
+Este aplicativo permite visualizar locais com registros de **perigos em estradas** 
+com base em dados geográficos. Faça upload de um arquivo CSV contendo latitude, longitude, e descrição do perigo.
+""")
 
-# Upload do arquivo CSV ou leitura padrão
-uploaded_file = st.file_uploader("Faça upload do arquivo CSV com dados das estradas", type=["csv"])
+# Upload do CSV
+uploaded_file = st.file_uploader("📁 Faça upload do arquivo CSV com os perigos registrados", type=["csv"])
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
-    st.subheader("Pré-visualização dos Dados")
+    st.subheader("🔍 Pré-visualização dos Dados")
     st.dataframe(df)
 
-    # Verifica colunas necessárias
-    if all(col in df.columns for col in ['latitude', 'longitude', 'condicao']):
+    # Verificar colunas obrigatórias
+    if all(col in df.columns for col in ['latitude', 'longitude', 'perigo']):
         m = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=6)
+        marker_cluster = MarkerCluster().add_to(m)
 
         for _, row in df.iterrows():
-            cor = 'green'
-            if row['condicao'] == 'Ruim':
+            perigo = row['perigo']
+            cor = 'blue'
+            if 'acidente' in perigo.lower():
                 cor = 'red'
-            elif row['condicao'] == 'Regular':
+            elif 'deslizamento' in perigo.lower():
                 cor = 'orange'
+            elif 'alagamento' in perigo.lower():
+                cor = 'darkblue'
 
-            folium.CircleMarker(
+            folium.Marker(
                 location=[row['latitude'], row['longitude']],
-                radius=6,
-                color=cor,
-                fill=True,
-                fill_opacity=0.7,
-                popup=f"Condição: {row['condicao']}"
-            ).add_to(m)
+                popup=f"Perigo: {perigo}",
+                icon=folium.Icon(color=cor, icon="exclamation-sign")
+            ).add_to(marker_cluster)
 
         st.subheader("🗺️ Mapa Gerado")
         st_folium(m, width=1000, height=600)
     else:
-        st.error("O CSV deve conter as colunas: latitude, longitude e condicao.")
+        st.error("⚠️ O CSV deve conter as colunas: latitude, longitude e perigo.")
 else:
-    st.info("Por favor, faça o upload de um arquivo CSV com dados geográficos.")
+    st.info("💡 Por favor, faça o upload de um arquivo CSV com as colunas: latitude, longitude e perigo.")
