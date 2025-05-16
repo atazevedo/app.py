@@ -7,13 +7,13 @@ from streamlit_folium import st_folium
  # Define severity levels based on quartiles
  def categorize_severity(icmnp_value):
     if icmnp_value <= Q1:
-       return 'Low'
+     return 'Low'
     elif icmnp_value <= Q2:
-       return 'Medium'
+     return 'Medium'
     elif icmnp_value <= Q3:
-       return 'High'
+     return 'High'
     else:
-       return 'Critical'
+     return 'Critical'
 
 st.set_page_config(layout="wide")
 st.title("🚧 Mapa Interativo - Locais com Perigos nas Estradas")
