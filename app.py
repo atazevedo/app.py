@@ -1,4 +1,4 @@
-import streamlit as st
+igoimport streamlit as st
 import pandas as pd
 import folium
 from folium.plugins import MarkerCluster
@@ -34,8 +34,8 @@ if uploaded_file is not None:
     Q2 = df['ICMNP'].quantile(0.5)
     Q3 = df['ICMNP'].quantile(0.75)
 
-    # Create the 'severity_level' column
-    df['severity_level'] = df['ICMNP'].apply(categorize_severity)
+    # Create the 'perigo' column
+    df['perigo'] = df['ICMNP'].apply(categorize_severity)
 
     st.subheader("🔍 Pré-visualização dos Dados")
     st.dataframe(df)
