@@ -13,7 +13,7 @@ Os locais são classificados automaticamente em **níveis de severidade** com ba
 """)
 
 # Upload do CSV
-uploaded_file = st.file_uploader("📁 Faça upload do arquivo CSV contendo as colunas 'latitude', 'longitude' e 'ICMNP'", type=["csv"])
+uploaded_file = st.file_uploader("📁 Faça upload do arquivo CSV contendo as colunas 'Latitude', 'Longitude' e 'ICMNP'", type=["csv"])
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
@@ -22,7 +22,7 @@ if uploaded_file is not None:
     st.dataframe(df)
 
     # Verificação de colunas obrigatórias
-    if all(col in df.columns for col in ['latitude', 'longitude', 'ICMNP']):
+    if all(col in df.columns for col in ['Latitude', 'Longitude', 'ICMNP']):
         
         # Calcular quartis
         Q1 = df['ICMNP'].quantile(0.25)
@@ -44,7 +44,7 @@ if uploaded_file is not None:
         df['condicao'] = df['ICMNP'].apply(categorize_severity)
 
         # Mapa
-        m = folium.Map(location=[df['latitude'].mean(), df['longitude'].mean()], zoom_start=6)
+        m = folium.Map(location=[df['Latitude'].mean(), df['Longitude'].mean()], zoom_start=6)
         marker_cluster = MarkerCluster().add_to(m)
 
         # Cores associadas à condição
@@ -56,8 +56,8 @@ if uploaded_file is not None:
         }
 
         for _, row in df.iterrows():
-            lat = row['latitude']
-            lon = row['longitude']
+            lat = row['Latitude']
+            lon = row['Longitude']
             cond = row['condicao']
             icmnp = row['ICMNP']
 
@@ -70,6 +70,6 @@ if uploaded_file is not None:
         st.subheader("🗺️ Mapa com Classificação de Condição")
         st_folium(m, width=1000, height=600)
     else:
-        st.error("⚠️ O CSV precisa conter as colunas: latitude, longitude e ICMNP.")
+        st.error("⚠️ O CSV precisa conter as colunas: Latitude, Longitude e ICMNP.")
 else:
-    st.info("💡 Por favor, faça upload de um CSV contendo as colunas 'latitude', 'longitude' e 'ICMNP'.")
+    st.info("💡 Por favor, faça upload de um CSV contendo as colunas 'Latitude', 'Longitude' e 'ICMNP'.")
